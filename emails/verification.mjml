@@ -1,0 +1,23 @@
+<mjml>
+  <mj-body background-color="#f5f5f5">
+    <mj-section>
+      <mj-column>
+        <mj-text font-size="20px" font-weight="bold">
+          Activation de votre compte Tic Tac Toe
+        </mj-text>
+        <mj-text>
+          Bonjour {{prenom}} {{nom}},
+        </mj-text>
+        <mj-text>
+          Merci de votre inscription. Pour activer votre compte, veuillez cliquer sur le bouton ci-dessous.
+        </mj-text>
+        <mj-button href="{{lien}}" background-color="#22c55e">
+          Activer mon compte
+        </mj-button>
+        <mj-text font-size="12px" color="#555555">
+          Si le bouton ne fonctionne pas, copiez-collez ce lien dans votre navigateur : {{lien}}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
