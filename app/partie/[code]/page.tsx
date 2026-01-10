@@ -32,7 +32,7 @@ export default function PagePartie() {
   // Initialisation
   // -------------------------
   useEffect(() => {
-    let socket: ReturnType<typeof obtenirSocketClient> | null = null;
+    const socket = obtenirSocketClient();
 
     async function initialiser() {
       const res = await fetch("/api/auth/profil-simple");
@@ -44,12 +44,6 @@ export default function PagePartie() {
       const data = await res.json();
       const userId = data.utilisateur.id;
       setUtilisateurId(userId);
-
-      socket = obtenirSocketClient();
-      if (!socket) {
-        setMessageEtat("Le mode multijoueur n'est pas disponible.");
-        return;
-      }
 
       socket.emit("rejoindre_partie", { code, utilisateurId: userId });
 
@@ -118,13 +112,11 @@ export default function PagePartie() {
     initialiser();
 
     return () => {
-      if (socket) {
-        socket.off("partie_info");
-        socket.off("partie_prete");
-        socket.off("maj_grille");
-        socket.off("fin_partie");
-        socket.off("relancer_partie");
-      }
+      socket.off("partie_info");
+      socket.off("partie_prete");
+      socket.off("maj_grille");
+      socket.off("fin_partie");
+      socket.off("relancer_partie");
     };
   }, [code]);
 
@@ -143,7 +135,6 @@ export default function PagePartie() {
     setJoueurCourant(prochain);
 
     const socket = obtenirSocketClient();
-    if (!socket) return;
 
     socket.emit("jouer_coup", {
       code,
@@ -191,7 +182,6 @@ export default function PagePartie() {
     setMessageEtat("Nouvelle partie !");
 
     const socket = obtenirSocketClient();
-    if (!socket) return;
 
     socket.emit("relancer_partie", {
       code,

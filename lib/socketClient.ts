@@ -2,28 +2,15 @@ import { io, Socket } from "socket.io-client";
 
 let socketClient: Socket | null = null;
 
-export function obtenirSocketClient() {
-  // En production, si aucun serveur Socket n’est défini → on désactive
-  if (process.env.NODE_ENV === "production" && !process.env.NEXT_PUBLIC_SOCKET_URL) {
-    return null;
-  }
-
+export function obtenirSocketClient(): Socket {
   if (!socketClient) {
     const socketUrl =
-      process.env.NODE_ENV === "production"
-        ? process.env.NEXT_PUBLIC_SOCKET_URL
-        : "http://localhost:3001";
-
-    if (!socketUrl) {
-      return null;
-    }
+      process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
 
     socketClient = io(socketUrl, {
-      autoConnect: true,
+      transports: ["websocket"],
       reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-      transports: ["websocket", "polling"],
+      reconnectionAttempts: 10,
     });
 
     socketClient.on("connect", () => {
@@ -31,11 +18,11 @@ export function obtenirSocketClient() {
     });
 
     socketClient.on("connect_error", (error) => {
-      console.error("✗ Erreur de connexion Socket.IO:", error.message);
+      console.error("✗ Erreur Socket.IO :", error.message);
     });
 
-    socketClient.on("disconnect", (reason) => {
-      console.log("✗ Déconnecté du serveur Socket.IO:", reason);
+    socketClient.on("disconnect", () => {
+      console.log("✗ Déconnecté du serveur Socket.IO");
     });
   }
 

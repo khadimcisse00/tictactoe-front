@@ -6,8 +6,6 @@ import { validerMotDePasse } from "@/lib/validation";
 import crypto from "crypto";
 
 export async function POST(req: NextRequest) {
-  console.log("test");
-
   try {
     const { nom, prenom, email, pseudo, motDePasse, avatar } = await req.json();
 
@@ -27,7 +25,6 @@ export async function POST(req: NextRequest) {
     }
 
     const deja = await prisma.utilisateur.findUnique({ where: { email } });
-
     if (deja) {
       return NextResponse.json(
         { message: "Un compte existe déjà avec cet email.", code: "EMAIL_EXISTE" },
@@ -65,6 +62,8 @@ export async function POST(req: NextRequest) {
     const baseUrl = process.env.NEXT_PUBLIC_URL!;
     const lien = `${baseUrl}/api/auth/verifier?token=${valeur}`;
 
+    console.log("📨 Envoi email de vérification à :", utilisateur.email);
+
     await envoyerEmailVerification(
       utilisateur.email,
       utilisateur.nom,
@@ -72,9 +71,11 @@ export async function POST(req: NextRequest) {
       lien
     );
 
+    console.log("📨 Email envoyé avec succès");
+
     return NextResponse.json({ ok: true });
-  } catch (error) {
-    console.error("ERREUR INSCRIPTION :", error);
+ /* } catch (error) {
+    console.error("❌ ERREUR INSCRIPTION :", error);
 
     return NextResponse.json(
       {
@@ -84,4 +85,16 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
+} */
+} catch (error: any) {
+  console.error("❌ ERREUR INSCRIPTION DÉTAILLÉE :", error);
+
+  return NextResponse.json(
+    {
+      message: "Erreur interne",
+      detail: error?.message ?? error,
+    },
+    { status: 500 }
+  );
+}
 }
